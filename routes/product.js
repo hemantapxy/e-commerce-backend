@@ -1,8 +1,8 @@
 import express from "express";
-import { addProduct, getProducts } from "../controllers/productController.js";
+import { getProducts, createDummyProducts } from "../controllers/productController.js";
 
 const router = express.Router();
-router.post("/", addProduct);
 router.get("/", getProducts);
+router.post("/dummy", createDummyProducts); // optional: create 100 products
 
 export default router;

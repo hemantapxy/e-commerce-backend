@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const auth = async (req, res, next) => {
+export default async function auth(req, res, next) {
   const token = req.header("Authorization")?.replace("Bearer ", "");
-
   if (!token) return res.status(401).json({ message: "No token, authorization denied" });
 
   try {
@@ -13,6 +12,4 @@ const auth = async (req, res, next) => {
   } catch (err) {
     res.status(401).json({ message: "Token is not valid" });
   }
-};
-
-export default auth;
+}

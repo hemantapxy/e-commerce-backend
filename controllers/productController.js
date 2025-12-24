@@ -1,21 +1,19 @@
 import Product from "../models/Product.js";
 
-// Add new product
-export const addProduct = async (req, res) => {
-  try {
-    const product = await Product.create(req.body);
-    res.status(201).json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 // Get all products
 export const getProducts = async (req, res) => {
-  try {
-    const products = await Product.find();
-    res.status(200).json(products);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  const products = await Product.find();
+  res.json(products);
+};
+
+// Create 100 dummy products
+export const createDummyProducts = async (req, res) => {
+  for (let i = 1; i <= 100; i++) {
+    await Product.create({
+      name: `Product ${i}`,
+      price: Math.floor(Math.random() * 10000) + 100,
+      image: `https://picsum.photos/200?random=${i}`
+    });
   }
+  res.json({ message: "100 dummy products created" });
 };
