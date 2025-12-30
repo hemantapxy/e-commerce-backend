@@ -1,55 +1,57 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
-dotenv.config(); // MUST be at top
+dotenv.config();
 
-// ✅ Create transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // TLS
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  tls: {
-    rejectUnauthorized: false, // FIX for Gmail TLS issue
-  },
 });
 
-// ✅ Verify SMTP connection
+// ✅ Verify SMTP
 transporter.verify((error, success) => {
   if (error) {
-    console.error("❌ SMTP VERIFY ERROR:", error);
+    console.error("❌ SMTP ERROR:", error);
   } else {
-    console.log("✅ SMTP SERVER READY");
+    console.log("✅ SMTP READY");
   }
 });
 
-// ✅ Send order confirmation email
 export const sendOrderEmail = async (to, order) => {
-  try {
-    await transporter.sendMail({
-      from: `"E-Shop" <${process.env.EMAIL_USER}>`,
-      to,
-      subject: "Order Confirmed ✅",
-      text: `
+  const itemsText = order.items
+    .map(
+      (item) =>
+        `${item.name} (${item.quantity} x ₹${item.price}) = ₹${
+          item.quantity * item.price
+        }`
+    )
+    .join("\n");
+
+  await transporter.sendMail({
+    from: `"E-Shop" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Order Confirmed 🧾",
+    text: `
 Hello,
 
 Your order has been placed successfully 🎉
 
 Order ID: ${order._id}
+
+Items:
+${itemsText}
+
 Total Amount: ₹${order.totalAmount}
 
 Thank you for shopping with us!
 – E-Shop Team
-      `,
-    });
+    `,
+  });
 
-    console.log("📧 Order email sent successfully");
-  } catch (error) {
-    console.error("❌ Failed to send email:", error);
-  }
+  console.log("📧 Order email sent to:", to);
 };
 
 export default transporter;
