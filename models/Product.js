@@ -2,13 +2,12 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, index: true },
-    description: { type: String },
-    category: { type: String, index: true },
+    name: { type: String, required: true },
+    description: String,
+    category: { type: String, required: true },
     price: { type: Number, required: true },
-    image: { type: String },
-    affiliateUrl: { type: String }, // optional for future Flipkart/Amazon links
-    brand: { type: String },         // optional for real products
+    brand: String,
+    image: String, // image path
   },
   { timestamps: true }
 );

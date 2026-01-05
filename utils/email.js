@@ -11,47 +11,32 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ✅ Verify SMTP
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ SMTP ERROR:", error);
-  } else {
-    console.log("✅ SMTP READY");
-  }
-});
-
-export const sendOrderEmail = async (to, order) => {
-  const itemsText = order.items
-    .map(
-      (item) =>
-        `${item.name} (${item.quantity} x ₹${item.price}) = ₹${
-          item.quantity * item.price
-        }`
-    )
-    .join("\n");
-
+export const sendOrderEmail = async (to, order, invoicePath) => {
   await transporter.sendMail({
     from: `"E-Shop" <${process.env.EMAIL_USER}>`,
     to,
-    subject: "Order Confirmed 🧾",
+    subject: "Order Confirmed 🧾 (Invoice Attached)",
     text: `
 Hello,
 
 Your order has been placed successfully 🎉
 
 Order ID: ${order._id}
-
-Items:
-${itemsText}
-
 Total Amount: ₹${order.totalAmount}
 
-Thank you for shopping with us!
+Please find your invoice attached.
+
 – E-Shop Team
     `,
+    attachments: [
+      {
+        filename: "invoice.pdf",
+        path: invoicePath,
+      },
+    ],
   });
 
-  console.log("📧 Order email sent to:", to);
+  console.log("📧 Order email with invoice sent to:", to);
 };
 
 export default transporter;

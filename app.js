@@ -2,12 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/product.js";
 import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js";
 import userRoutes from "./routes/user.js";
+import paymentRoutes from "./routes/payment.js";
 
 // ✅ Load environment variables FIRST
 dotenv.config();
@@ -32,14 +34,18 @@ app.use(
 
 app.use(express.json());
 
+// ✅ SERVE UPLOADED PRODUCT IMAGES (IMPORTANT)
+app.use("/uploads", express.static("uploads"));
+
 // ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/payment", paymentRoutes);
 
-// ✅ MongoDB Connection (BEST PRACTICE)
+// ✅ MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))

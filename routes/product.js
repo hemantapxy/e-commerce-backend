@@ -1,12 +1,19 @@
 import express from "express";
-import { getProducts, createDummyProducts } from "../controllers/productController.js";
+import {
+  getProducts,
+  addProduct,
+  addBulkProducts,
+  getProductById,   // 👈 ADD THIS
+} from "../controllers/productController.js";
 
 const router = express.Router();
 
-// Get products (with optional search & category filter)
 router.get("/", getProducts);
 
-// Create professional dummy products (run only once)
-router.post("/dummy", createDummyProducts);
+// 🔥 ADD THIS ROUTE
+router.get("/:id", getProductById);
+
+router.post("/", addProduct);
+router.post("/add-bulk", addBulkProducts);
 
 export default router;
