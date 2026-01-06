@@ -34,20 +34,23 @@ export const generateInvoice = (order, user) => {
     doc.fontSize(14).text("Order Items");
     doc.moveDown(0.5);
 
-    order.items.forEach((item) => {
+    // calculate total amount
+    let totalAmount = 0;
+
+    order.items.forEach((item, idx) => {
+      const name = item.product?.name || "Unknown Product";
+      const price = item.product?.price || 0;
+      const quantity = item.quantity || 1;
+      const itemTotal = price * quantity;
+      totalAmount += itemTotal;
+
       doc
         .fontSize(12)
-        .text(
-          `${item.product.name} - ${item.quantity} x ₹${item.product.price} = ₹${
-            item.quantity * item.product.price
-          }`
-        );
+        .text(`${idx + 1}. ${name} - ${quantity} x ₹${price} = ₹${itemTotal}`);
     });
 
     doc.moveDown();
-    doc.fontSize(14).text(`Total Amount: ₹${order.totalAmount}`, {
-      align: "right",
-    });
+    doc.fontSize(14).text(`Total Amount: ₹${totalAmount}`, { align: "right" });
 
     doc.end();
 

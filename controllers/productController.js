@@ -2,7 +2,6 @@ import Product from "../models/Product.js";
 
 /**
  * GET /api/products
- * ?search=iphone&category=Mobile
  */
 export const getProducts = async (req, res) => {
   try {
@@ -10,12 +9,23 @@ export const getProducts = async (req, res) => {
 
     let query = {};
 
+    // SEARCH: name, brand, price
     if (search) {
-      query.name = { $regex: search, $options: "i" };
+      const searchNumber = Number(search);
+
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
+      ];
+
+      if (!isNaN(searchNumber)) {
+        query.$or.push({ price: searchNumber });
+      }
     }
 
+    // CATEGORY (case-insensitive)
     if (category) {
-      query.category = category;
+      query.category = { $regex: `^${category}$`, $options: "i" };
     }
 
     const products = await Product.find(query);
@@ -25,13 +35,9 @@ export const getProducts = async (req, res) => {
   }
 };
 
+
 /**
  * POST /api/products
- * Add REAL product with image
- */
-/**
- * POST /api/products
- * Add REAL product with image URL
  */
 export const addProduct = async (req, res) => {
   try {
@@ -47,7 +53,7 @@ export const addProduct = async (req, res) => {
       category,
       price,
       brand,
-      image: image || null, // use image URL if provided
+      image: image || null,
     });
 
     res.status(201).json({
@@ -59,22 +65,26 @@ export const addProduct = async (req, res) => {
   }
 };
 
-// controllers/productController.js
+/**
+ * POST /api/products/bulk
+ */
 export const addBulkProducts = async (req, res) => {
   try {
-    const products = req.body; // expects an array
+    const products = req.body;
+
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "Products array required" });
     }
 
-    // Optional: Validate each product
-    const validProducts = products.filter(p => p.name && p.price && p.category);
+    const validProducts = products.filter(
+      p => p.name && p.price && p.category
+    );
 
     const inserted = await Product.insertMany(validProducts);
 
     res.status(201).json({
       message: `${inserted.length} products added successfully`,
-      insertedProducts: inserted.length
+      insertedProducts: inserted.length,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -83,7 +93,6 @@ export const addBulkProducts = async (req, res) => {
 
 /**
  * GET /api/products/:id
- * Get single product by ID
  */
 export const getProductById = async (req, res) => {
   try {
