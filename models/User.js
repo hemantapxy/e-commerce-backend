@@ -9,6 +9,13 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, default: "" },
     address: { type: String, default: "" },
 
+    // 🔐 ROLE (IMPORTANT)
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user", // 👈 Every signup is USER
+    },
+
     // 🔑 Forgot Password
     resetPasswordToken: String,
     resetPasswordExpire: Date,

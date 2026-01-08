@@ -107,3 +107,37 @@ export const getProductById = async (req, res) => {
     res.status(500).json({ message: "Invalid product ID" });
   }
 };
+
+// POST /api/products/:id/review
+export const addProductReview = async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const { id } = req.params;
+    const userId = req.user._id; // from auth middleware
+    const username = req.user.username;
+
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.userId.toString() === userId.toString()
+    );
+    if (alreadyReviewed)
+      return res.status(400).json({ message: "You already reviewed this product" });
+
+    const review = { userId, username, rating, comment };
+    product.reviews.push(review);
+
+    // Update average rating and count
+    product.numReviews = product.reviews.length;
+    product.averageRating =
+      product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.numReviews;
+
+    await product.save();
+
+    res.status(201).json({ message: "Review added", review });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
