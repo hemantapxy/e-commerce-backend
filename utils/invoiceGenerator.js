@@ -25,8 +25,10 @@ export const generateInvoice = (order, user) => {
 
     doc.fontSize(12);
     doc.text(`Invoice ID: ${order._id}`);
-    doc.text(`Customer: ${user.name || "Customer"}`);
+    doc.text(`Customer: ${user.username || "Customer"}`);
     doc.text(`Email: ${user.email}`);
+    doc.text(`Phone: ${user.phone || "N/A"}`);
+    doc.text(`Address: ${user.address || "N/A"}`);
     doc.text(`Date: ${new Date().toLocaleDateString()}`);
     doc.moveDown();
 
