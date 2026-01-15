@@ -10,6 +10,10 @@ import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js";
 import userRoutes from "./routes/user.js";
 import paymentRoutes from "./routes/payment.js";
+import flightRoutes from "./routes/flightRoutes.js";
+import flightpaymentRoutes from "./routes/flightpaymentRoutes.js";
+
+
 
 // ✅ Load environment variables FIRST
 dotenv.config();
@@ -44,6 +48,10 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/flights", flightRoutes);
+app.use("/api/flight-payment", flightpaymentRoutes);
+
+
 
 // ✅ MongoDB Connection
 mongoose
