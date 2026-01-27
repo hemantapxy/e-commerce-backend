@@ -57,3 +57,18 @@ export const removeFromCart = async (req, res) => {
   const updated = await Cart.findById(cart._id).populate("items.product");
   res.json(updated);
 };
+
+// Get cart item count (Flipkart style)
+export const getCartCount = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.user._id });
+
+    const count = cart
+      ? cart.items.reduce((sum, item) => sum + item.quantity, 0)
+      : 0;
+
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get cart count" });
+  }
+};

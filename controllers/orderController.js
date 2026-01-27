@@ -105,3 +105,12 @@ export const myOrders = async (req, res) => {
 
   res.json(cleanedOrders);
 };
+
+export const hasBoughtProduct = async (req, res) => {
+  const order = await Order.findOne({
+    user: req.user._id,
+    "items.product": req.params.productId
+  });
+
+  res.json({ hasBought: !!order });
+};

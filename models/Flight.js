@@ -14,3 +14,4 @@ const flightSchema = new mongoose.Schema({
 });
 
 export default mongoose.model("Flight", flightSchema);
+   
