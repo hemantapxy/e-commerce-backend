@@ -1,4 +1,6 @@
 import Product from "../models/Product.js";
+import Order from "../models/Order.js";
+
 
 /**
  * GET /api/products
@@ -111,10 +113,11 @@ export const getProductById = async (req, res) => {
 };
 
 // POST /api/products/:id/review
+// POST /api/products/:id/review
 export const addProductReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
-    const { id } = req.params;
+    const { id: productId } = req.params;
 
     if (!rating || !comment) {
       return res
@@ -125,12 +128,26 @@ export const addProductReview = async (req, res) => {
     const userId = req.user._id;
     const username = req.user.username;
 
-    const product = await Product.findById(id);
+    // ✅ STEP 1: Check if user has purchased this product
+    const hasPurchased = await Order.findOne({
+      user: userId,
+      "items.product": productId,
+      status: { $in: ["completed", "delivered"] },
+    });
+
+    if (!hasPurchased) {
+      return res.status(403).json({
+        message: "You can review this product only after purchasing it",
+      });
+    }
+
+    // ✅ STEP 2: Find product
+    const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // ❌ prevent duplicate review
+    // ❌ Prevent duplicate review
     const alreadyReviewed = product.reviews.find(
       (r) => r.userId.toString() === userId.toString()
     );
@@ -141,7 +158,7 @@ export const addProductReview = async (req, res) => {
         .json({ message: "You already reviewed this product" });
     }
 
-    // ✅ add review
+    // ✅ STEP 3: Add review
     product.reviews.push({
       userId,
       username,
@@ -149,7 +166,7 @@ export const addProductReview = async (req, res) => {
       comment,
     });
 
-    // ✅ update review stats
+    // ✅ STEP 4: Update stats
     product.numReviews = product.reviews.length;
     product.averageRating =
       product.reviews.reduce((acc, item) => acc + item.rating, 0) /

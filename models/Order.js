@@ -9,7 +9,12 @@ const orderSchema = new mongoose.Schema({
     }
   ],
   total: Number,
-  status: { type: String, default: "pending" }
+ status: {
+  type: String,
+  enum: ["pending", "shipped", "delivered"],
+  default: "pending",
+}
+
 }, { timestamps: true });
 
 export default mongoose.model("Order", orderSchema);

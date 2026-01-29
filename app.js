@@ -13,6 +13,7 @@ import paymentRoutes from "./routes/payment.js";
 import flightRoutes from "./routes/flightRoutes.js";
 import flightpaymentRoutes from "./routes/flightpaymentRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 
 
@@ -52,6 +53,8 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/flights", flightRoutes);
 app.use("/api/flight-payment", flightpaymentRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+
 
 
 
