@@ -9,16 +9,11 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, default: "" },
     address: { type: String, default: "" },
 
-    // 🔐 ROLE (IMPORTANT)
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user", // 👈 Every signup is USER
-    },
+    // Profile image (Cloudinary)
+    profileImage: { type: String, default: "" },
+    profileImageId: { type: String, default: "" },
 
-    // 🔑 Forgot Password
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
+    role: { type: String, enum: ["user", "admin"], default: "user" },
   },
   { timestamps: true }
 );
